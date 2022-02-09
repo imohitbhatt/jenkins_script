@@ -1,31 +1,36 @@
 #!/bin/groovy
 
 def arr = []
+int i =0
 
-def conditions(){
+def conditions(int i, arr){
         question = input message: 'Question',
                         parameters: [string(defaultValue: '',
                                     description: "Please specify between 'yes' or 'no'",
                                     name: 'Do you want to enter any other value?',
                                     trim: true)]
     
-        if (question == 'yes' || question == 'YES' || question == 'Yes'){
+        if (question.toLowerCase() == 'yes'){
         echo "Thanks for choosing yes, you may go ahead."
-        env.value = input message: 'INPUT REQUIRED!',
+        arr[i] = input message: 'INPUT REQUIRED!',
                         parameters: [string(defaultValue: '',
                                     description: 'Please enter the another value',
                                     name: 'Another value',
                                     trim: true)]
-        conditions()
-        } else if (question == 'no' || question == 'NO' || question == 'No') {
-            echo "end of pipeline"
+                                    i++
+        conditions(i, arr)
+        
+        } else if (question.toLowerCase() == 'no') {
+            def int sum = 0
+            for (int a=0; a < arr.size(); a++) {  
+                 sum = sum.toInteger() + arr[a].toInteger()
+            } 
+            echo "the sum of all the numbers is ${sum}"
         } else {
             echo "Please choose a valid option"
-            conditions()
+            conditions(i, arr)
         }
-        
-
-}
+    }
 
 pipeline {
     agent any
@@ -33,25 +38,28 @@ pipeline {
         stage ("Prompt for input") {
         steps {
             script {
-            arr[0] = input message: 'INPUT REQUIRED!',
+            arr[i] = input message: 'INPUT REQUIRED!',
                                 parameters: [string(defaultValue: '',
                                             description: 'Please enter the first value.',
                                             name: 'First value',
                                             trim: true)]
+                                            i++
                                             
-            arr[1] = input message: 'INPUT REQUIRED!',
+                                            
+            arr[i] = input message: 'INPUT REQUIRED!',
                                 parameters: [string(defaultValue: '',
-                                            description: 'Please enter the second value.',
+                                            description: "Please enter the second value.",
                                             name: 'Second value',
-                                            trim: true)]       
+                                            trim: true)]
+                                            i++
                             }
                         }
                     }
 
-        stage ("question"){
+        stage ("Question"){
             steps{
                 script{
-                    conditions()
+                    conditions(i, arr)
                 }
             }
         }           
