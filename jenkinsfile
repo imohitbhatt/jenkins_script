@@ -1,0 +1,59 @@
+#!/bin/groovy
+
+def arr = []
+
+def conditions(){
+        question = input message: 'Question',
+                        parameters: [string(defaultValue: '',
+                                    description: "Please specify between 'yes' or 'no'",
+                                    name: 'Do you want to enter any other value?',
+                                    trim: true)]
+    
+        if (question == 'yes' || question == 'YES' || question == 'Yes'){
+        echo "Thanks for choosing yes, you may go ahead."
+        env.value = input message: 'INPUT REQUIRED!',
+                        parameters: [string(defaultValue: '',
+                                    description: 'Please enter the another value',
+                                    name: 'Another value',
+                                    trim: true)]
+        conditions()
+        } else if (question == 'no' || question == 'NO' || question == 'No') {
+            echo "end of pipeline"
+        } else {
+            echo "Please choose a valid option"
+            conditions()
+        }
+        
+
+}
+
+pipeline {
+    agent any
+    stages {
+        stage ("Prompt for input") {
+        steps {
+            script {
+            arr[0] = input message: 'INPUT REQUIRED!',
+                                parameters: [string(defaultValue: '',
+                                            description: 'Please enter the first value.',
+                                            name: 'First value',
+                                            trim: true)]
+                                            
+            arr[1] = input message: 'INPUT REQUIRED!',
+                                parameters: [string(defaultValue: '',
+                                            description: 'Please enter the second value.',
+                                            name: 'Second value',
+                                            trim: true)]       
+                            }
+                        }
+                    }
+
+        stage ("question"){
+            steps{
+                script{
+                    conditions()
+                }
+            }
+        }           
+    }        
+}
